@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -39,6 +39,36 @@ async function run() {
      
 
       res.send(result)
+    })
+
+
+    app.get('/food/:id', async(req,res) => {
+       const {id} = req.params
+       console.log(id)
+       
+
+       const result = await foodCollection.findOne({_id: new ObjectId(id)})
+       
+
+       res.send({
+          success: true,
+          result
+       })
+    })
+
+    //post method
+    // insertOne
+    //insertMany
+
+    app.post('/food', async(req,res) => {
+       const data = req.body
+      //  console.log(data)
+       const result = await foodCollection.insertOne(data)
+       res.send({
+        success: true,
+        result
+
+       })
     })
     
 
