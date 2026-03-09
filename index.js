@@ -45,11 +45,8 @@ async function run() {
     app.get('/food/:id', async(req,res) => {
        const {id} = req.params
        console.log(id)
-       
 
        const result = await foodCollection.findOne({_id: new ObjectId(id)})
-       
-
        res.send({
           success: true,
           result
@@ -70,6 +67,15 @@ async function run() {
 
        })
     })
+   
+  app.get("/my-foods", async(req,res) => {
+    const email = req.query.email;
+    const query = {"donator.email": email};
+    const result = await foodCollection.find(query).toArray();
+
+    res.send(result);
+  })
+  
     
 
 
