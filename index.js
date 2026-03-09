@@ -84,6 +84,30 @@ app.get("/my-foods", async (req, res) => {
  res.send(result);
 
 });
+
+ //put
+ //updateOne
+ //updateMany
+
+ app.put("/food/:id", async (req, res)  => {
+
+ const id = req.params.id;
+
+ const updatedFood = req.body;
+
+ const query = { _id: new ObjectId(id) };
+
+ const updateDoc = {
+  $set: updatedFood
+ };
+
+ const result = await foodCollection.updateOne(query, updateDoc);
+
+ res.send(result);
+
+});
+      
+
    
   
     
