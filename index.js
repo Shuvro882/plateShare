@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
+require("dotenv").config();
 const port = process.env.PORT || 3000;
 
 //middleware
@@ -11,7 +12,7 @@ app.use(express.json())
 
 
 
-const uri = "mongodb+srv://plate-share:QQRnlL6irEwPcb8U@db-first-server.9dfabil.mongodb.net/?appName=Db-first-server";
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@db-first-server.9dfabil.mongodb.net/?appName=Db-first-server`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -24,7 +25,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
     
     const db = client.db('food_db')
     const foodCollection = db.collection('food')
@@ -218,7 +219,7 @@ app.get("/my-food-requests", async (req, res) => {
   
 
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
