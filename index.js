@@ -133,6 +133,49 @@ app.delete("/food/:id", async (req, res) => {
       }
     });
 
+    // Get all requests for a food (owner view)
+    app.get('/foodRequests/:foodId', async (req, res) => {
+      const { foodId } = req.params;
+      try {
+        const requests = await foodRequestCollection.find({ foodId }).toArray();
+        res.send({ success: true, requests });
+      } catch (err) {
+        console.error(err);
+        res.status(500).send({ success: false, error: err.message });
+      }
+    });
+
+    // Accept or Reject a request
+    app.patch('/foodRequests/:requestId', async (req, res) => {
+      const { requestId } = req.params;
+      const { status } = req.body; 
+
+      try {
+        
+        const result = await foodRequestCollection.updateOne(
+          { _id: new ObjectId(requestId) },
+          { $set: { status } }
+        );
+
+        
+        if (status === "accepted") {
+          const request = await foodRequestCollection.findOne({ _id: new ObjectId(requestId) });
+          await foodCollection.updateOne(
+            { _id: new ObjectId(request.foodId) },
+            { $set: { status: "donated" } }
+          );
+        }
+
+        res.send({ success: true, result });
+      } catch (err) {
+        console.error(err);
+        res.status(500).send({ success: false, error: err.message });
+      }
+    });
+
+  
+  
+
     
   
     
