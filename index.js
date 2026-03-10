@@ -173,13 +173,49 @@ app.delete("/food/:id", async (req, res) => {
       }
     });
 
-  
-  
+     // Get all requests made by a user
+app.get("/my-food-requests", async (req, res) => {
+  const email = req.query.email;
+  if (!email) return res.send([]);
 
-    
-  
-    
+  try {
+    const requests = await foodRequestCollection
+      .find({ userEmail: email })
+      .toArray();
 
+    // Include some food info if needed
+    const result = await Promise.all(
+      requests.map(async (r) => {
+        const food = await foodCollection.findOne({ _id: new ObjectId(r.foodId) });
+        return {
+          ...r,
+          foodName: food?.food_name,
+          foodQuantity: food?.food_quantity,
+          foodLocation: food?.pickup_location,
+        };
+      })
+    );
+
+    res.send(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ success: false, error: err.message });
+  }
+});
+
+    // Get requests received for user's donated foods
+    app.get('/my-donated-requests', async (req, res) => {
+      const email = req.query.email;
+      if (!email) return res.send([]);
+      // First get all foods donated by user
+      const donatedFoods = await foodCollection.find({ "donator.email": email }).toArray();
+      const donatedFoodIds = donatedFoods.map(f => f._id.toString());
+      // Then get requests for those foods
+      const requests = await foodRequestCollection.find({ foodId: { $in: donatedFoodIds } }).toArray();
+      res.send(requests);
+    });
+
+  
 
 
     await client.db("admin").command({ ping: 1 });
