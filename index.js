@@ -28,7 +28,7 @@ async function run() {
     
     const db = client.db('food_db')
     const foodCollection = db.collection('food')
-    
+    const foodRequestCollection = db.collection('foodRequests')
     //find
     //findOne
 
@@ -120,8 +120,20 @@ app.delete("/food/:id", async (req, res) => {
 
 });
       
+// --------- Food Requests Routes ---------
+    // Submit a food request
+    app.post('/foodRequests', async (req, res) => {
+      const requestData = req.body;
+      try {
+        const result = await foodRequestCollection.insertOne(requestData);
+        res.send({ success: true, result });
+      } catch (err) {
+        console.error(err);
+        res.status(500).send({ success: false, error: err.message });
+      }
+    });
 
-   
+    
   
     
 
